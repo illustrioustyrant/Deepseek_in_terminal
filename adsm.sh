@@ -1,5 +1,5 @@
 #!/bin/bash
-# 默认参数（开发者可修改配置）
+
 MODEL="deepseek-chat"
 TEMPERATURE=1
 API_KEY="<your_deepseek_API>"
@@ -87,7 +87,6 @@ while true; do
       if [[ "$line" == data:* ]]; then
         [[ "$line" == *"[DONE]"* ]] && { echo -e "\n\n"; break; }
 
-        # 解析JSON数据
         JSON_DATA=$(sed 's/^data: //; s/\\n/\\\\n/g' <<< "$line")
         CONTENT=$(jq -r '.choices[0].delta | if .content == null then .reasoning_content else .content end' <<< "$JSON_DATA")
         RAW_CONTENT=$(jq -r '.choices[0].delta.content' <<< "$JSON_DATA")
@@ -96,11 +95,10 @@ while true; do
         if [[ "$MODEL" == "deepseek-reasoner" ]]; then
           if (( BUT == 0 )) && [[ "$RAW_CONTENT" != "null" ]]; then
             BUT=1
-            echo -e "\n\n"  # 输出两个换行分隔推理过程
+            echo -e "\n\n" 
           fi
         fi
 
-        # 输出内容
         [[ -n "$CONTENT" ]] && printf "%b" "$CONTENT" | tee -a "$temp_file"
       fi
     done
@@ -111,8 +109,6 @@ while true; do
       -H "Authorization: Bearer $API_KEY" \
       -d "$DATA")
     
-    # 提取内容
-#   CONTENT=$(jq -r '.choices[0].message | "\(.reasoning_content)\n\n\(.content)"' <<< "$RESPONSE")
     CONTENT=$(jq -r '
     .choices[0].message |
     (

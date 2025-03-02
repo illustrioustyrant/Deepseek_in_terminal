@@ -1,10 +1,9 @@
 #!/bin/bash
-# 默认参数
 MODEL="deepseek-chat"
 TEMPERATURE=1
 API_KEY="<your_deepseek_API>"  # 替换为你的 DeepSeek API Key
-USER_NAME=$(whoami)  # 获取当前用户名
-LANGUAGE="(answer in Chinese)"  # 默认语言提示
+USER_NAME=$(whoami)  
+LANGUAGE="(answer in Chinese)" 
 STREAM=true 
 BUT=0
 
