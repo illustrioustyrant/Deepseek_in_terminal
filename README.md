@@ -1,4 +1,3 @@
-```markdown
 # Deepseek_in_terminal
 
 ![CLI Tool](https://img.shields.io/badge/CLI-Tool-brightgreen) 
