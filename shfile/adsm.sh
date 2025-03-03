@@ -4,7 +4,7 @@ MODEL="deepseek-chat"
 TEMPERATURE=1
 API_KEY="<your_deepseek_API>"
 USER_NAME=$(whoami)
-STREAM=true 
+STREAM=true
 LANGUAGE="(answer in Chinese)"
 messages='[]'
 
@@ -24,7 +24,7 @@ while [[ $# -gt 0 ]]; do
     -v3) MODEL="deepseek-chat"; shift ;;
     -r1) MODEL="deepseek-reasoner"; shift ;;
     -e) LANGUAGE=""; shift ;;
-    *) 
+    *)
       if [[ "$1" =~ ^[0-9]*\.?[0-9]+$ ]]; then
         FORMATTED_TEMP=$(printf "%.1f" "$1")
         if (( $(echo "$FORMATTED_TEMP >= 0.0 && $FORMATTED_TEMP <= 2.0" | bc -l) )); then
@@ -58,7 +58,7 @@ while true; do
       model: $model,
       messages: $messages,
       temperature: $temperature,
-      stream: true,
+      stream: $stream,
       response_format: { type: "text" },
       frequency_penalty: 0,
       max_tokens: 2048,
@@ -83,7 +83,7 @@ while true; do
       -H "Content-Type: application/json" \
       -H "Authorization: Bearer $API_KEY" \
       -d "$DATA" | while IFS= read -r line; do
-      
+
       if [[ "$line" == data:* ]]; then
         [[ "$line" == *"[DONE]"* ]] && { echo -e "\n\n"; break; }
 
@@ -95,7 +95,7 @@ while true; do
         if [[ "$MODEL" == "deepseek-reasoner" ]]; then
           if (( BUT == 0 )) && [[ "$RAW_CONTENT" != "null" ]]; then
             BUT=1
-            echo -e "\n\n" 
+            echo -e "\n\n"
           fi
         fi
 
@@ -108,7 +108,7 @@ while true; do
       -H "Content-Type: application/json" \
       -H "Authorization: Bearer $API_KEY" \
       -d "$DATA")
-    
+
     CONTENT=$(jq -r '
     .choices[0].message |
     (

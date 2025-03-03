@@ -2,9 +2,9 @@
 MODEL="deepseek-chat"
 TEMPERATURE=1
 API_KEY="<your_deepseek_API>"  # 替换为你的 DeepSeek API Key
-USER_NAME=$(whoami)  
-LANGUAGE="(answer in Chinese)" 
-STREAM=true 
+USER_NAME=$(whoami)
+LANGUAGE="(answer in Chinese)"
+STREAM=true
 BUT=0
 
 # 帮助信息
@@ -23,7 +23,7 @@ while [[ $# -gt 0 ]]; do
     -v3) MODEL="deepseek-chat"; shift ;;
     -r1) MODEL="deepseek-reasoner"; shift ;;
     -e) LANGUAGE=""; shift ;;
-    *) 
+    *)
       if [[ "$1" =~ ^[0-9]*\.?[0-9]+$ ]]; then
         FORMATTED_TEMP=$(printf "%.1f" "$1")
         if [[ "$FORMATTED_TEMP" =~ ^(2(\.0)?|1(\.[0-9])?|0(\.[0-9])?)$ ]]; then
@@ -56,7 +56,7 @@ DATA=$(cat <<EOF
   "max_tokens": 2048,
   "presence_penalty": 0,
   "stop": null,
-  "stream": true,
+  "stream": $STREAM,
   "stream_options": null,
   "top_p": 1,
   "tools": null,
