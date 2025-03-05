@@ -33,20 +33,6 @@ while [[ $# -gt 0 ]]; do
       SAVE_HISTORY=1
       shift
       ;;
-    -a)
-      echo "用法: $0 [选项]"
-      echo "选项:"
-      echo "  -a         显示此帮助信息"
-      echo "  -e         禁用中文回答（不添加 '(answer in Chinese)'）"
-      echo "  -m         启用多轮对话模式（输入 'exit' 退出）"
-      echo "  -h         保存对话历史到文件 ~/Documents/dshistory.md"
-      echo
-      echo "其他:"
-      echo " @file:../../abc:   可以读取本地文件"
-      echo " enter              可以换行"
-      echo " ^D                 在新的一行使用ctrlD发送"
-      exit 0
-      ;;
     -*)
       echo "错误：无效选项 $1" >&2
       exit 1
@@ -58,32 +44,15 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# 将 (answer in Chinese) 添加到 system 消息的开头
-messages=$(jq -c --arg lang "$LANGUAGE" \
-  'map(if .role == "system" then .content = $lang + "\n" + .content else . end)' \
-  <<< "$messages")
-
 # 对话循环
 while true; do
   echo -n "<$USER_NAME>: " >&2
-  USER_MESSAGE=""  # 初始化用户输入
-  while IFS= read -r -e line; do
-    # 如果用户输入为空（直接按回车），则添加一个空行
-    if [[ -z "$line" ]]; then
-      USER_MESSAGE+=$'\n'
-    else
-      USER_MESSAGE+="$line"$'\n'
-    fi
-  done
-  # 移除最后一个多余的换行符
-  USER_MESSAGE="${USER_MESSAGE%$'\n'}"
+  IFS= read -r -d '' USER_MESSAGE
 
   # 处理退出逻辑（保持不变）
   if [[ $MULTI_MODE -eq 1 && "$USER_MESSAGE" == "exit" ]]; then
     break
   fi
-
-  # 其余代码保持不变...
 
   # ====== 新增@file:...:处理逻辑 ======
   while [[ "$USER_MESSAGE" =~ @file:([^:]+): ]]; do
@@ -104,7 +73,7 @@ while true; do
   echo;echo;
 
   # 更新消息历史（添加用户消息）
-  messages=$(jq -c --arg role "user" --arg content "${USER_MESSAGE}" \
+  messages=$(jq -c --arg role "user" --arg content "${USER_MESSAGE}${LANGUAGE}" \
     '. + [{"role": $role, "content": $content}]' <<< "$messages")
 
   # 构建请求数据（使用配置文件参数并替换messages）
